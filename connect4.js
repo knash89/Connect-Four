@@ -66,7 +66,6 @@ function findSpotForCol(x) {
 /** placeInTable: update DOM to place piece into HTML table of board */
 
 function placeInTable(y, x) {
-  // TODO: make a div and insert into correct table cell
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${currPlayer}`);
@@ -105,7 +104,7 @@ function handleClick(evt) {
   // check for tie
   let isTie = board.every(row=>{
     return row.every(cell=>{
-      return cell === null;
+      return cell !== null;
     })
   });
   if(isTie){
