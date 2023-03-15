@@ -18,6 +18,8 @@ let board = []; // array of rows, each row is array of cells  (board[y][x])
 function makeBoard() {
   // set "board" to empty HEIGHT x WIDTH matrix array using height/width constants
   for (let y = 0; y < HEIGHT; y++) {
+    // loop through each row (HEIGHT) on that board to create columns (WIDTH)
+    // add to board variable - using fill for the new array with null
     board.push(new Array(WIDTH).fill(null));
   }
 };
@@ -25,7 +27,7 @@ function makeBoard() {
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
 function makeHtmlBoard() {
-  // get "htmlBoard" variable from the item in HTML doc w/ID of "board"
+  // get "htmlBoard" variable from the item in HTML doc w/ID of "board" 
   const htmlBoard = document.getElementById('board');
 
   // Create HTML elements that make the top row of the board used for selecting. 
@@ -33,29 +35,35 @@ function makeHtmlBoard() {
   top.setAttribute("id", "column-top");
   top.addEventListener("click", handleClick);
 
-  for (let x = 0; x < WIDTH; x++) {
+  for (let x = 0; x < WIDTH; x++) { 
     const headCell = document.createElement("td");
     headCell.setAttribute("id", x);
     top.append(headCell);
   }
   htmlBoard.append(top);
 
-  // create HTML elements that make up the rest of the board/table
+  // creates HTML elements that make up the rest of the board/table
+  // loop through each row, create row DOM elements (tr)
   for (let y = 0; y < HEIGHT; y++) {
     const row = document.createElement("tr");
+    // for each row, loop through and create each cell (td)
     for (let x = 0; x < WIDTH; x++) {
       const cell = document.createElement("td");
+      // set the cells attribute value
       cell.setAttribute("id", `${y}-${x}`);
+      // append cells to those rows
       row.append(cell);
     }
+    // append rows to the board
     htmlBoard.append(row);
   }
 }
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
-
 function findSpotForCol(x) {
+  // start at the bottom and keep going until you find an empty cell
   for(let y = HEIGHT - 1; y >= 0; y--){
+    //if cell is empty return y
     if(!board[y][x]){
       return y;
     }
@@ -64,10 +72,11 @@ function findSpotForCol(x) {
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
-
 function placeInTable(y, x) {
+    // make a div and insert into correct table cell
   const piece = document.createElement('div');
   piece.classList.add('piece');
+  // set the class to p1 or p2 for current player so we can set the piece color red or blue
   piece.classList.add(`p${currPlayer}`);
 
   const cell = document.getElementById(`${y}-${x}`);
@@ -75,54 +84,51 @@ function placeInTable(y, x) {
 }
 
 /** endGame: announce game end */
-
 function endGame(msg) {
   alert(msg)
 }
 
 /** handleClick: handle click of column top to play piece */
-
 function handleClick(evt) {
   // get x from ID of clicked cell
   const x = +evt.target.id;
-
   // get next spot in column (if none, ignore click)
   const y = findSpotForCol(x);
   if (y === null) {
     return;
   }
-
   // place piece in board and add to HTML table
   placeInTable(y, x);
   board[y][x] = currPlayer;
-
   // check for win
   if (checkForWin()) {
     return endGame(`Player ${currPlayer} won!`);
   }
-
   // check for tie
+  // first loop through the rows using every
   let isTie = board.every(row=>{
+    // for each row, loop through the cells
     return row.every(cell=>{
+      // then return true if every cell isn't empty/null
       return cell !== null;
     })
   });
   if(isTie){
-    return endGame(`It's a tie`);
+    // use setTimeout so counter appears before endgame message.
+    return setTimeout(()=>endGame(`It's a tie`), 200);
+    // return endGame(`It's a tie`);
   }
-
-  // switch players
+  // switch players using a ternary - if current player is 1, switch to 2, if not stay on 1
   currPlayer = currPlayer === 1 ? 2 : 1;
 }
 
-/** checkForWin: check board cell-by-cell for "does a win start here?" */
 
+/** checkForWin: check board cell-by-cell for "does a win start here?" */
 function checkForWin() {
   function _win(cells) {
     // Check four cells to see if they're all color of current player
     //  - cells: list of four (y, x) cells
     //  - returns true if all are legal coordinates & all match currPlayer
-
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
@@ -132,7 +138,6 @@ function checkForWin() {
         board[y][x] === currPlayer
     );
   }
-
   // loop through the rows
   for (let y = 0; y < HEIGHT; y++) {
     // loop through the cell in each row
@@ -156,3 +161,4 @@ function checkForWin() {
 
 makeBoard();
 makeHtmlBoard();
+
